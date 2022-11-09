@@ -7,9 +7,20 @@ environment {
 }
 
     stages {
-		stage('TF-Plan-Beanstalk'){
+		stage('tf-plan-rds'){
 		    steps{
-				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/beanstalk/"){
+				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
+                    echo '--- plan rds'
+					sh 'ls'
+					sh 'pwd'
+                    sh "terraform init"
+                    sh "terraform plan"
+				}
+ 		    }
+		}
+		stage('tf-plan-beanstalk'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
                     echo '--- plan beanstalk'
 					sh 'ls'
 					sh 'pwd'
@@ -18,20 +29,9 @@ environment {
 				}
  		    }
 		}
-				stage('TF-Plan-Codebuild'){
+				stage('tf-plan'){
 		    steps{
-				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codebuild/"){
-                    echo '--- plan codebuild'
-					sh 'ls'
-					sh 'pwd'
-                    sh "terraform init"
-                    sh "terraform plan"
-				}
- 		    }
-		}
-				stage('TF-Plan'){
-		    steps{
-				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codepipeline/"){
+				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
                     echo '--- plan codepipeline'
 					sh 'ls'
 					sh 'pwd'
@@ -47,27 +47,27 @@ environment {
                  }
  		    }
  		}		
-		stage('TF-Create-Beanstalk'){
+		stage('tf-create-rds'){
 		    steps{
-				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/beanstalk/"){
+				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
+                    echo '--- create rds'
+                    sh "terraform init"
+                    sh "terraform apply --auto-approve"
+				}
+		    }
+		}
+		stage('tf-create-beanstalk'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
                     echo '--- create beanstalk'
 				    sh "terraform init"
                     sh "terraform apply --auto-approve"
 				}
 		    }
 		}
-		stage('TF-Create-Codebuild'){
+		stage('tf-create-codepipeline'){
 		    steps{
-				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codebuild/"){
-                    echo '--- create codebuild'
-                    sh "terraform init"
-                    sh "terraform apply --auto-approve"
-				}
-		    }
-		}
-		stage('TF-Create-Codepipeline'){
-		    steps{
-				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codepipeline/"){
+				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
                     echo '--- create codepipeline'
                     sh "terraform init"
                     sh "terraform apply --auto-approve"
@@ -81,25 +81,26 @@ environment {
                  }
  		    }
  		}
-		stage('TF-Destroy-Beanstalk'){
+		stage('tf-destroy-rds'){
 		    steps{
-				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/beanstalk/"){
+				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
+                    echo '--- destroy rds'
+                    sh "terraform destroy --auto-approve"
+				}
+		    }
+		}
+		stage('tf-destroy-beanstalk'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
                     echo '--- destroy beanstalk'
                     sh "terraform destroy --auto-approve"
 				}
 		    }
 		}
-		stage('TF-Destroy-Codebuild'){
+
+		stage('tf-destroy-codepipeline'){
 		    steps{
-				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codebuild/"){
-                    echo '--- destroy codebuild'
-                    sh "terraform destroy --auto-approve"
-				}
-		    }
-		}
-		stage('TF-Destroy-Codepipeline'){
-		    steps{
-				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codepipeline/"){
+				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
                     echo '--- destroy codepipeline'
                     sh "terraform destroy --auto-approve"
 				}
