@@ -33,7 +33,7 @@ parameters {
 				}
  		    }
 		}
-				stage('tf-plan'){
+				stage('tf-plan-codepipeline'){
 		    steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
                     echo '--- plan codepipeline'
