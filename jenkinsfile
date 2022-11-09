@@ -123,7 +123,6 @@ parameters {
 				}
 		    }
 		}
-
 		stage('tf-destroy-codepipeline'){
 			when{
                 equals expected: true, actual: params.Destroy
