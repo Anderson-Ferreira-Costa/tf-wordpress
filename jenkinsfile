@@ -6,6 +6,12 @@ environment {
     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
 }
 
+parameters {
+        booleanParam(name: 'apply', defaultValue: false, description: 'Criar o ambiente?')
+        booleanParam(name: 'destroy', defaultValue: false, description: 'Destruir o ambiente?')
+
+    }
+
     stages {
 		stage('tf-plan-rds'){
 		    steps{
