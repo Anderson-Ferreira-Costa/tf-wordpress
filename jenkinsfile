@@ -1,7 +1,7 @@
 pipeline {
-   agent any 
-       agent {
-		label 'openinsurance-devops.ca-central-1.jenkinsci.slave'
+//   agent any 
+    agent {
+		label 'slave-jenkins'
 	}
 
 environment {
