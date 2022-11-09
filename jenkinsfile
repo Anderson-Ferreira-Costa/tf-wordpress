@@ -1,0 +1,109 @@
+pipeline {
+   agent any 
+
+environment {
+    AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+}
+
+    stages {
+		stage('TF-Plan-Beanstalk'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/beanstalk/"){
+                    echo '--- plan beanstalk'
+					sh 'ls'
+					sh 'pwd'
+                    sh "terraform init"
+                    sh "terraform plan"
+				}
+ 		    }
+		}
+				stage('TF-Plan-Codebuild'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codebuild/"){
+                    echo '--- plan codebuild'
+					sh 'ls'
+					sh 'pwd'
+                    sh "terraform init"
+                    sh "terraform plan"
+				}
+ 		    }
+		}
+				stage('TF-Plan'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codepipeline/"){
+                    echo '--- plan codepipeline'
+					sh 'ls'
+					sh 'pwd'
+                    sh "terraform init"
+                    sh "terraform plan"
+				}
+ 		    }
+		}
+ 		stage('Confirm Plan?'){
+ 		    steps{
+                 timeout(time: 2, unit: 'HOURS') {
+                     input 'Prosseguir com a Execução?'
+                 }
+ 		    }
+ 		}		
+		stage('TF-Create-Beanstalk'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/beanstalk/"){
+                    echo '--- create beanstalk'
+				    sh "terraform init"
+                    sh "terraform apply --auto-approve"
+				}
+		    }
+		}
+		stage('TF-Create-Codebuild'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codebuild/"){
+                    echo '--- create codebuild'
+                    sh "terraform init"
+                    sh "terraform apply --auto-approve"
+				}
+		    }
+		}
+		stage('TF-Create-Codepipeline'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codepipeline/"){
+                    echo '--- create codepipeline'
+                    sh "terraform init"
+                    sh "terraform apply --auto-approve"
+				}
+		    }
+		}
+		stage('Confirm Destroy?'){
+ 			steps{
+                 timeout(time: 2, unit: 'HOURS') {
+                     input 'Prosseguir com a Execução?'
+                 }
+ 		    }
+ 		}
+		stage('TF-Destroy-Beanstalk'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/beanstalk/"){
+                    echo '--- destroy beanstalk'
+                    sh "terraform destroy --auto-approve"
+				}
+		    }
+		}
+		stage('TF-Destroy-Codebuild'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codebuild/"){
+                    echo '--- destroy codebuild'
+                    sh "terraform destroy --auto-approve"
+				}
+		    }
+		}
+		stage('TF-Destroy-Codepipeline'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/jenkins-tf-developer-associate/codepipeline/"){
+                    echo '--- destroy codepipeline'
+                    sh "terraform destroy --auto-approve"
+				}
+		    }
+		}
+	}
+}
