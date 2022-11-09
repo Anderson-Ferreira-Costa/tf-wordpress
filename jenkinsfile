@@ -48,7 +48,7 @@ parameters {
 				}
  		    }
 		}
- 		stage('Confirm ${action}?'){
+ 		stage("Confirm ${action}?"){
 
  		    steps{
                  timeout(time: 2, unit: 'HOURS') {
@@ -56,28 +56,28 @@ parameters {
                  }
  		    }
  		}		
-		stage('tf-${action}-rds'){	
+		stage("tf-${action}-rds"){	
 		    steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
-                    echo '--- ${action} rds'
+                    echo "--- ${action} rds"
                     sh "terraform ${action} --auto-approve"
 				}
 		    }
 		}
-		stage('tf-${action}-beanstalk'){
+		stage("tf-${action}-beanstalk"){
 		    
 			steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
-                    echo '--- ${action} beanstalk'
+                    echo "--- ${action} beanstalk"
                     sh "terraform ${action} --auto-approve"
 				}
 		    }
 		}
-		stage('tf-${action}-codepipeline'){
+		stage("tf-${action}-codepipeline"){
 			
 		    steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
-                    echo '--- ${action} codepipeline'
+                    echo "--- ${action} codepipeline"
                     sh "terraform ${action} --auto-approve"
 				}
 		    }
