@@ -7,9 +7,8 @@ environment {
 }
 
 parameters {
-        booleanParam(name: 'Apply', defaultValue: false, description: 'Criar o ambiente?')
+        booleanParam(name: 'Apply', defaultValue: false, description: 'Construir o ambiente?')
         booleanParam(name: 'Destroy', defaultValue: false, description: 'Destruir o ambiente?')
-
     }
 
     stages {
