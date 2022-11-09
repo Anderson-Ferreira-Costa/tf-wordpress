@@ -7,8 +7,7 @@ environment {
 }
 
 parameters {
-        booleanParam(name: 'Apply', defaultValue: false, description: 'Construir o ambiente?')
-        booleanParam(name: 'Destroy', defaultValue: false, description: 'Destruir o ambiente?')
+       choice(name: 'action', choices: ['apply', 'destroy'], description: 'Criar ou Destruir ambiente?') }
     }
 
     stages {
@@ -45,94 +44,37 @@ parameters {
 				}
  		    }
 		}
- 		stage('Confirm Plan?'){
-			when{
-                equals expected: true, actual: params.Apply
-            }
+ 		stage('Confirm ${action}?'){
+
  		    steps{
                  timeout(time: 2, unit: 'HOURS') {
                      input 'Prosseguir com a Execução?'
                  }
  		    }
  		}		
-		stage('tf-create-rds'){
-			when{
-                equals expected: true, actual: params.Apply
-            }			
+		stage('tf-${action}-rds'){	
 		    steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
-                    echo '--- create rds'
-                    sh "terraform init"
-                    sh "terraform apply --auto-approve"
+                    echo '--- ${action} rds'
+                    sh "terraform ${action} --auto-approve"
 				}
 		    }
 		}
-		stage('tf-create-beanstalk'){
-			when{
-                equals expected: true, actual: params.Apply
-            }		    
+		stage('tf-${action}-beanstalk'){
+		    
 			steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
-                    echo '--- create beanstalk'
-				    sh "terraform init"
-                    sh "terraform apply --auto-approve"
+                    echo '--- ${action} beanstalk'
+                    sh "terraform ${action} --auto-approve"
 				}
 		    }
 		}
-		stage('tf-create-codepipeline'){
-			when{
-                equals expected: true, actual: params.Apply
-            }			
+		stage('tf-${action}-codepipeline'){
+			
 		    steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
-                    echo '--- create codepipeline'
-                    sh "terraform init"
-                    sh "terraform apply --auto-approve"
+                    echo '--- ${action} codepipeline'
+                    sh "terraform ${action} --auto-approve"
 				}
 		    }
 		}
-		stage('Confirm Destroy?'){
-			when{
-                equals expected: true, actual: params.Destroy
-            }
- 			steps{
-                 timeout(time: 2, unit: 'HOURS') {
-                     input 'Prosseguir com a Execução?'
-                 }
- 		    }
- 		}
-		stage('tf-destroy-rds'){
-			when{
-                equals expected: true, actual: params.Destroy
-            }
-			steps{
-				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
-                    echo '--- destroy rds'
-                    sh "terraform destroy --auto-approve"
-				}
-		    }
-		}
-		stage('tf-destroy-beanstalk'){
-			when{
-                equals expected: true, actual: params.Destroy
-            }
-		    steps{
-				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
-                    echo '--- destroy beanstalk'
-                    sh "terraform destroy --auto-approve"
-				}
-		    }
-		}
-		stage('tf-destroy-codepipeline'){
-			when{
-                equals expected: true, actual: params.Destroy
-            }
-		    steps{
-				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
-                    echo '--- destroy codepipeline'
-                    sh "terraform destroy --auto-approve"
-				}
-		    }
-		}
-	}
-}

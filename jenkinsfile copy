@@ -1,0 +1,138 @@
+pipeline {
+   agent any 
+
+environment {
+    AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+}
+
+parameters {
+        booleanParam(name: 'Apply', defaultValue: false, description: 'Construir o ambiente?')
+        booleanParam(name: 'Destroy', defaultValue: false, description: 'Destruir o ambiente?')
+    }
+
+    stages {
+		stage('tf-plan-rds'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
+                    echo '--- plan rds'
+					sh 'ls'
+					sh 'pwd'
+                    sh "terraform init"
+                    sh "terraform plan"
+				}
+ 		    }
+		}
+		stage('tf-plan-beanstalk'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
+                    echo '--- plan beanstalk'
+					sh 'ls'
+					sh 'pwd'
+                    sh "terraform init"
+                    sh "terraform plan"
+				}
+ 		    }
+		}
+				stage('tf-plan'){
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
+                    echo '--- plan codepipeline'
+					sh 'ls'
+					sh 'pwd'
+                    sh "terraform init"
+                    sh "terraform plan"
+				}
+ 		    }
+		}
+ 		stage('Confirm Plan?'){
+			when{
+                equals expected: true, actual: params.Apply
+            }
+ 		    steps{
+                 timeout(time: 2, unit: 'HOURS') {
+                     input 'Prosseguir com a Execução?'
+                 }
+ 		    }
+ 		}		
+		stage('tf-create-rds'){
+			when{
+                equals expected: true, actual: params.Apply
+            }			
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
+                    echo '--- create rds'
+                    sh "terraform init"
+                    sh "terraform apply --auto-approve"
+				}
+		    }
+		}
+		stage('tf-create-beanstalk'){
+			when{
+                equals expected: true, actual: params.Apply
+            }		    
+			steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
+                    echo '--- create beanstalk'
+				    sh "terraform init"
+                    sh "terraform apply --auto-approve"
+				}
+		    }
+		}
+		stage('tf-create-codepipeline'){
+			when{
+                equals expected: true, actual: params.Apply
+            }			
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
+                    echo '--- create codepipeline'
+                    sh "terraform init"
+                    sh "terraform apply --auto-approve"
+				}
+		    }
+		}
+		stage('Confirm Destroy?'){
+			when{
+                equals expected: true, actual: params.Destroy
+            }
+ 			steps{
+                 timeout(time: 2, unit: 'HOURS') {
+                     input 'Prosseguir com a Execução?'
+                 }
+ 		    }
+ 		}
+		stage('tf-destroy-rds'){
+			when{
+                equals expected: true, actual: params.Destroy
+            }
+			steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
+                    echo '--- destroy rds'
+                    sh "terraform destroy --auto-approve"
+				}
+		    }
+		}
+		stage('tf-destroy-beanstalk'){
+			when{
+                equals expected: true, actual: params.Destroy
+            }
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
+                    echo '--- destroy beanstalk'
+                    sh "terraform destroy --auto-approve"
+				}
+		    }
+		}
+		stage('tf-destroy-codepipeline'){
+			when{
+                equals expected: true, actual: params.Destroy
+            }
+		    steps{
+				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
+                    echo '--- destroy codepipeline'
+                    sh "terraform destroy --auto-approve"
+				}
+		    }
+		}
+	}
+}
