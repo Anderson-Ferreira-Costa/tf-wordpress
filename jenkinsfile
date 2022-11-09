@@ -7,7 +7,7 @@ environment {
 }
 
 parameters {
-       choice(name: 'action', choices: ['apply', 'destroy'], description: 'Criar ou Destruir ambiente?')
+       choice(name: 'action', choices: "apply\destroy", description: 'Criar ou Destruir ambiente?')
     }
 
     stages {
