@@ -52,7 +52,7 @@ parameters {
 
  		    steps{
                  timeout(time: 2, unit: 'HOURS') {
-                     input 'Prosseguir com a Execução?'
+                     input "Prosseguir com o ${action}"
                  }
  		    }
  		}		
