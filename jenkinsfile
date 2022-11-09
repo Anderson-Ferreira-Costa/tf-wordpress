@@ -48,7 +48,7 @@ parameters {
 				}
  		    }
 		}
- 		stage("Confirm ${action}?"){
+ 		stage('Confirmar?'){
 
  		    steps{
                  timeout(time: 2, unit: 'HOURS') {
@@ -56,7 +56,7 @@ parameters {
                  }
  		    }
  		}		
-		stage("tf-${action}-rds"){	
+		stage('tf-rds'){	
 		    steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/rds/"){
                     echo "--- ${action} rds"
@@ -64,7 +64,7 @@ parameters {
 				}
 		    }
 		}
-		stage("tf-${action}-beanstalk"){
+		stage('tf-beanstalk'){
 		    
 			steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
@@ -73,7 +73,7 @@ parameters {
 				}
 		    }
 		}
-		stage("tf-${action}-codepipeline"){
+		stage('tf-codepipeline'){
 			
 		    steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
