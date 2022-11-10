@@ -1,9 +1,6 @@
 pipeline {
    agent any 
-//    agent {
-//		label 'slave-jenkins'
-//	}
-
+   
 environment {
     AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
@@ -64,7 +61,6 @@ parameters {
 		    }
 		}
 		stage('tf-beanstalk'){
-		    
 			steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/beanstalk/"){
                     echo "--- ${action} beanstalk"
@@ -73,7 +69,6 @@ parameters {
 		    }
 		}
 		stage('tf-codepipeline'){
-			
 		    steps{
 				dir("/var/lib/jenkins/workspace/tf-wordpress/codepipeline/"){
                     echo "--- ${action} codepipeline"
